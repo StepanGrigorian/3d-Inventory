@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9fa50b1c4d7ad3f4084e4b20a24b2005, type: 3}
-  m_Name: New Server Settings
+  m_Name: Defailt Server Settings
   m_EditorClassIdentifier: 
   url: https://wadahub.manerai.com/api/inventory/status
   bearerToken: kPERnYcWAY46xaSy8CEzanosAgsWM84Nx7SKM4QBSqPq6c7StWfGxzhxPfDh8MaP

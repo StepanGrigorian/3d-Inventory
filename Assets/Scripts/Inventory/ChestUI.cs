@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class ChestUI : MonoBehaviour
 {
-    [SerializeField] private SerializedDictionary<StorableType, UIItem> ItemsSlots = new();
+    [SerializeField] private SerializedDictionary<StorableType, UIItem> itemsSlots = new();
     [SerializeField] private Chest chest;
     [SerializeField] private GraphicRaycaster graphicRaycaster;
     [SerializeField] private EventSystem eventSystem;
@@ -26,18 +26,18 @@ public class ChestUI : MonoBehaviour
     private void AddToUI(IStorable item)
     {
         var type = item.GetAttributes.type;
-        if (ItemsSlots.ContainsKey(type))
+        if (itemsSlots.ContainsKey(type))
         {
-            ItemsSlots[type].SetEnabled();
+            itemsSlots[type].SetEnabled();
         }
     }
 
     private void RemoveFromUI(IStorable item)
     {
         var type = item.GetAttributes.type;
-        if (ItemsSlots.ContainsKey(type) && chest.Storables[type].Count < 1)
+        if (itemsSlots.ContainsKey(type) && chest.Storables[type].Count < 1)
         {
-            ItemsSlots[type].SetDisabled();
+            itemsSlots[type].SetDisabled();
         }
     }
 
@@ -46,7 +46,7 @@ public class ChestUI : MonoBehaviour
         Debug.Log(type);
     }
 
-    public void HandleInput() //Check for UI click
+    public void HandleInput() // Check for UI click
     {
         List<RaycastResult> raycastResults = new List<RaycastResult>();
         PointerEventData pointerEventData = new PointerEventData(eventSystem)
@@ -60,14 +60,12 @@ public class ChestUI : MonoBehaviour
         {
             foreach (RaycastResult result in raycastResults)
             {
-                UIItem item;
-                if (result.gameObject.TryGetComponent(out item))
+                if (result.gameObject.TryGetComponent(out UIItem item))
                 {
-                    chest.RemoveItemByType(item.storableType);
+                    chest.RemoveItemByType(item.StorableType);
                     return;
                 }
             }
         }
-
     }
 }

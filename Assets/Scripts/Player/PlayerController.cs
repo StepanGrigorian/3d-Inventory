@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviour
         CaptureInput();
         MovePlayer();
         RotateCamera();
-        EvaluateInteraction();
+        PerformInteraction();
     }
 
     private void FixedUpdate()
@@ -113,13 +113,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void EvaluateInteraction()
+    private void PerformInteraction()
     {
         if (Input.GetMouseButtonDown(0) && currentInteractable != null && !currentInteractable.IsInteracting)
         {
             if (currentInteractable.StartInteraction(interactor))
-            { 
-                isInteracting = true; 
+            {
+                isInteracting = true;
             }
         }
         else if (Input.GetMouseButtonUp(0) && currentInteractable != null && currentInteractable.IsInteracting)

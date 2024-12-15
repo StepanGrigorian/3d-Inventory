@@ -7,6 +7,7 @@ public interface IStorable
     IStorage Storage { get; set; }
     StorableAttributes GetAttributes { get; }
     bool IsStored { get; set; }
+    bool ListenersAdded { get; set; }
     void EnablePhysics();
     void DisablePhysics();
 }

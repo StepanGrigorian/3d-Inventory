@@ -1,8 +1,3 @@
-public interface IHover
-{
-    HoverType GetHoverType { get; }
-}
-
 public enum HoverType
 {
     None = 0,

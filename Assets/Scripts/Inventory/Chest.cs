@@ -4,53 +4,59 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using static UnityEditor.Progress;
 
 [RequireComponent(typeof(Animator))]
 public class Chest : MonoBehaviour, IStorage, IHover, IInteractable
 {
-    [SerializeField] private SerializedDictionary<StorableType, Transform> ItemsPositions = new();
-    [SerializeField] private Animator UIAnimator;
-    [SerializeField] private ChestUI ChestUI;
+    [SerializeField] private SerializedDictionary<StorableType, Transform> itemsPositions = new();
+
+    [SerializeField] private Animator uiAnimator;
+
+    [SerializeField] private ChestUI chestUI;
 
     private Animator animator;
 
-    private UnityEvent<IStorable> onStore = new();
-    private UnityEvent<IStorable> onRemove = new();
+    private readonly UnityEvent<IStorable> onStore = new();
+    private readonly UnityEvent<IStorable> onRemove = new();
 
     [SerializeField] private Dictionary<StorableType, List<IStorable>> storables = new();
+
     private bool isInteracting = false;
+
     public Dictionary<StorableType, List<IStorable>> Storables => storables;
-
     public HoverType GetHoverType => HoverType.Type2;
-
     public UnityEvent<IStorable> OnStore => onStore;
     public UnityEvent<IStorable> OnRemove => onRemove;
-
     public bool IsInteracting => isInteracting;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        foreach(StorableType type in Enum.GetValues(typeof(StorableType)))
+        foreach (StorableType type in Enum.GetValues(typeof(StorableType)))
         {
-            storables.Add(type, new());
+            storables.Add(type, new List<IStorable>());
         }
-        OnRemove.AddListener(Remove);
+        onRemove.AddListener(Remove);
     }
 
     public void Interact(bool status)
     {
+        animator.ResetTrigger("Open");
+        animator.ResetTrigger("Close");
         animator.SetTrigger(status ? "Open" : "Close");
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (other.TryGetComponent(out IStorable item) && !item.IsStored)
         {
             Interact(true);
-            item.Storage = this;
-            OnStore.AddListener(Store);
+            if (!item.ListenersAdded)
+            {
+                item.Storage = this;
+                onStore.AddListener(Store);
+                item.ListenersAdded = true;
+            }
         }
     }
 
@@ -59,8 +65,12 @@ public class Chest : MonoBehaviour, IStorage, IHover, IInteractable
         if (other.TryGetComponent(out IStorable item))
         {
             Interact(false);
-            item.Storage = null;
-            OnStore.RemoveListener(Store);
+            if (item.ListenersAdded)
+            {
+                item.Storage = null;
+                onStore.RemoveListener(Store);
+                item.ListenersAdded = false;
+            }
         }
     }
 
@@ -77,13 +87,13 @@ public class Chest : MonoBehaviour, IStorage, IHover, IInteractable
 
     private IEnumerator StoreIE(IStorable item, float time = 0.5f)
     {
-        if (ItemsPositions.ContainsKey(item.GetAttributes.type))
+        if (itemsPositions.ContainsKey(item.GetAttributes.type))
         {
             Vector3 start = item.Transform.position;
-            Vector3 target = ItemsPositions[item.GetAttributes.type].transform.position;
+            Vector3 target = itemsPositions[item.GetAttributes.type].position;
 
             Quaternion startRotation = item.Transform.rotation;
-            Quaternion targetRotation = ItemsPositions[item.GetAttributes.type].transform.rotation;
+            Quaternion targetRotation = itemsPositions[item.GetAttributes.type].rotation;
             float progress = 0;
 
             while (progress < 1f)
@@ -94,16 +104,15 @@ public class Chest : MonoBehaviour, IStorage, IHover, IInteractable
                 yield return null;
             }
         }
-
     }
 
     public void RemoveItemByType(StorableType type)
     {
         if (storables[type]?.Count > 0)
         {
-            var item = storables[type][0];
+            IStorable item = storables[type][0];
             storables[type].RemoveAt(0);
-            OnRemove?.Invoke(item);
+            onRemove.Invoke(item);
         }
     }
 
@@ -118,7 +127,7 @@ public class Chest : MonoBehaviour, IStorage, IHover, IInteractable
     {
         isInteracting = true;
         Interact(true);
-        UIAnimator.SetTrigger("Show");
+        uiAnimator.SetTrigger("Show");
         return true;
     }
 
@@ -126,7 +135,7 @@ public class Chest : MonoBehaviour, IStorage, IHover, IInteractable
     {
         isInteracting = false;
         Interact(false);
-        UIAnimator.SetTrigger("Hide");
-        ChestUI.HandleInput();
+        uiAnimator.SetTrigger("Hide");
+        chestUI.HandleInput();
     }
 }

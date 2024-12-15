@@ -5,8 +5,8 @@ using UnityEngine.UI;
 public class UIItem : MonoBehaviour
 {
     [SerializeField] private ChestUI parent;
-    
-    public StorableType storableType;
+
+    public StorableType StorableType;
 
     private Image image;
 
@@ -17,7 +17,7 @@ public class UIItem : MonoBehaviour
 
     public void SetEnabled()
     {
-        switch (storableType)
+        switch (StorableType)
         {
             case StorableType.None:
                 break;

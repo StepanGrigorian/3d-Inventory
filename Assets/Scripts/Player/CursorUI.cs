@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class CursorUI : MonoBehaviour
 {
-    [SerializeField] private InteractorComponent Player;
+    [SerializeField] private InteractorComponent player;
     private Image image;
 
     private void Awake()
@@ -15,12 +15,12 @@ public class CursorUI : MonoBehaviour
 
     private void OnEnable()
     {
-        Player.OnCanInteractStatusChange.AddListener(UpdateColor);
+        player.OnCanInteractStatusChange.AddListener(UpdateColor);
     }
 
     private void OnDisable()
     {
-        Player.OnCanInteractStatusChange.RemoveListener(UpdateColor);
+        player.OnCanInteractStatusChange.RemoveListener(UpdateColor);
     }
 
     private void UpdateColor(HoverType status)

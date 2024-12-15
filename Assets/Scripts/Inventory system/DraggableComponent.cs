@@ -31,6 +31,14 @@ public class DraggableComponent : MonoBehaviour, IInteractable, IStorable, IHove
         get => isStored;
         set => isStored = value;
     }
+
+    private bool listenersAdded = false;
+    public bool ListenersAdded
+    {
+        get => listenersAdded;
+        set => listenersAdded = value;
+    }
+
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
@@ -77,6 +85,6 @@ public class DraggableComponent : MonoBehaviour, IInteractable, IStorable, IHove
         EnablePhysics();
         transform.SetParent(null);
 
-        storage?.OnStore?.Invoke(this);
+        Storage?.OnStore?.Invoke(this);
     }
 }
